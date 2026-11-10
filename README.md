@@ -53,3 +53,11 @@ A persona escolhida foi o engenheiro de manutenção, pois é ele quem fica no e
 - Inventar TAG, modelo, norma, métrica ou histórico que não esteja na base de conhecimento.
 - Tratar dados pessoais de terceiros (placas, imagens de pessoas, dados de empregados).
 - Responder sobre outros equipamentos além das câmeras (painéis, totens, sensores).
+
+
+## 5. Estrutura de Arquivos da Sprint 01
+
+- [`/prompts/system_prompts.md`](./prompts/system_prompts.md): **System Prompt (Artefato 1)** completo e estruturado com as diretrizes de persona, escopo, regras anti-alucinação, instruções Chain-of-Thought (CoT), formato de saída com Nível de Confiança, exemplos Few-Shot e comentários pedagógicos.
+- `/evals/sprint1_eval_set.json`: Conjunto de casos de teste para validação de comportamento e respostas do assistente.
+- `/tools/tools_spec.json`: Especificação de schemas e integração com a base do FSM.
+- `/data/knowledge_base/`: Base de conhecimento e inventário de ativos.

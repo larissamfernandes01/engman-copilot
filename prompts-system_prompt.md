@@ -1,0 +1,13 @@
+# PAPEL
+
+# OBJETIVO
+
+# ESCOPO
+
+# REGRAS
+
+# FORMATO
+
+# TOM
+
+# BORDA

@@ -1,0 +1,16 @@
+# Arquivos sensiveis e chaves de API
+.env
+*.key
+*.pem
+
+# Python & Ambientes (caso façam testes locais fora do repositório)
+__pycache__/
+*.pyc
+.venv/
+env/
+.ipynb_checkpoints/
+
+# IDEs e Sistema
+.vscode/
+.idea/
+.DS_Store

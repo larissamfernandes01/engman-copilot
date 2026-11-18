@@ -1,1 +1,13 @@
+CHALLENGE SPRINT 01 - ENGMAN COPILOT (FIAP x MOTIVA)
 
+Grupo: 3 - Turma 1CCPS
+Recorte escolhido: A - Diagnostico e Confiabilidade
+
+Integrantes:
+Larissa Fernandes - RM 574592 - 1CCPS
+Guilherme Cavalcante da Costa - RM 575153 - 1CCPS
+Pedro Henrique Hernandes - RM 575010 - 1CCPS
+Nicolas Assunção - RM 575154 - 1CCPS
+
+Repositorio: https://github.com/larissamfernandes01/engman-copilot
+Fluxograma: https://github.com/larissamfernandes01/engman-copilot/blob/main/docs/arquitetura.png

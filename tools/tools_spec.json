@@ -1,1 +1,193 @@
-
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "projeto": "EngMan Copilot",
+  "versao": "sprint1",
+  "recorte": "A - Diagnóstico e Confiabilidade",
+  "politica_tratamento_erros": {
+    "ativo_nao_encontrado": "Quando uma tool retornar status 'NOT_FOUND' ou lista vazia, o assistente deve informar explicitamente que o TAG ou procedimento não consta na base atual, nunca inventar dados e orientar o usuário a validar o código no cadastro do FSM.",
+    "timeout_ou_indisponibilidade": "Quando uma tool retornar erro de execução ('ERROR'), o assistente deve interromper a geração de diagnóstico conclusivo, sinalizar falha na consulta aos dados e sugerir verificação manual no sistema corporativo."
+  },
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "consultar_ativo",
+        "description": "Consulta a ficha cadastral e técnica de um ativo eletroeletrônico rodoviário a partir do seu TAG. Use sempre no início de um diagnóstico para confirmar o tipo de equipamento, modelo, localização (km), vida útil e nível de criticidade.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "description": "Identificador único do ativo no padrão da concessionária (ex.: 'CFTV-PTZ-KM412-N', 'PMV-FIX-KM105-S')."
+            }
+          },
+          "required": ["tag"],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "consultar_historico_falhas",
+        "description": "Retorna o histórico simulado de falhas registradas no FSM para um ativo identificado por TAG dentro de uma janela retroativa em meses, incluindo data, sintoma, causa raiz identificada, tempo de reparo (MTTR) e indicador de reincidência. Use sempre que o usuário perguntar sobre histórico, causas prováveis ou recorrência de defeitos.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "description": "TAG do ativo cadastrado no catálogo da Motiva."
+            },
+            "janela_meses": {
+              "type": "integer",
+              "description": "Janela de tempo retroativa em meses para busca das ocorrências (padrão: 12 meses).",
+              "minimum": 1,
+              "maximum": 60,
+              "default": 12
+            },
+            "tipo_falha": {
+              "type": "string",
+              "enum": [
+                "todas",
+                "optica_imagem",
+                "comunicacao_rede",
+                "alimentacao_energia",
+                "sensor_calibracao",
+                "mecanica_estrutural"
+              ],
+              "description": "Filtro opcional pela natureza técnica da falha.",
+              "default": "todas"
+            }
+          },
+          "required": ["tag"],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "consultar_procedimento",
+        "description": "Recupera o passo a passo resumido do Procedimento Operacional Padrão (POP) aplicável a um tipo de ativo e intervenção, juntamente com os pré-requisitos obrigatórios de segurança (NR-10, NR-35 e EPIs). Use sempre antes de recomendar ações de inspeção ou manutenção em campo.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "tipo_ativo": {
+              "type": "string",
+              "enum": [
+                "cftv_ptz",
+                "pmv",
+                "callbox",
+                "sat",
+                "sca",
+                "laco_indutivo",
+                "portico_free_flow",
+                "hs_wim"
+              ],
+              "description": "Categoria padronizada do ativo eletroeletrônico."
+            },
+            "tipo_intervencao": {
+              "type": "string",
+              "enum": [
+                "corretiva",
+                "preventiva",
+                "inspecao",
+                "cbm"
+              ],
+              "description": "Modalidade de manutenção prevista no plano da Engenharia de Manutenção."
+            }
+          },
+          "required": ["tipo_ativo", "tipo_intervencao"],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "abrir_ordem_servico",
+        "description": "Registra uma proposta simulada de Ordem de Serviço (OS) no sistema FSM após validação do diagnóstico e da prioridade com o usuário. Retorna o protocolo simulado da OS. Nunca acione esta função sem antes ter identificado o TAG, a hipótese de falha e a prioridade.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "description": "TAG do ativo que receberá a intervenção."
+            },
+            "tipo_intervencao": {
+              "type": "string",
+              "enum": [
+                "corretiva",
+                "preventiva",
+                "inspecao",
+                "cbm"
+              ],
+              "description": "Tipo de intervenção recomendada segundo o plano de manutenção."
+            },
+            "prioridade": {
+              "type": "string",
+              "enum": [
+                "critica",
+                "alta",
+                "media",
+                "baixa"
+              ],
+              "description": "Nível de prioridade calculado com base na matriz de criticidade (segurança viária, arrecadação e disponibilidade)."
+            },
+            "descricao": {
+              "type": "string",
+              "description": "Descrição técnica objetiva do sintoma observado, hipótese diagnóstica e ação sugerida para a equipe de campo."
+            },
+            "janela_inicio": {
+              "type": "string",
+              "description": "Data/hora prevista de início do atendimento no formato ISO 8601 (YYYY-MM-DDTHH:MM)."
+            },
+            "janela_fim": {
+              "type": "string",
+              "description": "Data/hora limite prevista para conclusão do atendimento no formato ISO 8601 (YYYY-MM-DDTHH:MM)."
+            }
+          },
+          "required": [
+            "tag",
+            "tipo_intervencao",
+            "prioridade",
+            "descricao",
+            "janela_inicio",
+            "janela_fim"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "calcular_metricas_confiabilidade",
+        "description": "Calcula indicadores quantitativos de confiabilidade de um ativo a partir do histórico do FSM: taxa de falhas (lambda), tempo médio entre falhas (MTBF), confiabilidade exponencial R(t) = e^(-lambda * t) e tendência de degradação (RGA/LDA). Use quando o engenheiro solicitar análise estatística, justificativa de retrofit ou manutenção baseada em condição (CBM).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "tag": {
+              "type": "string",
+              "description": "TAG do ativo a ser analisado."
+            },
+            "periodo_meses": {
+              "type": "integer",
+              "description": "Período histórico em meses utilizado como amostra para estimar a taxa de falhas lambda.",
+              "minimum": 3,
+              "maximum": 60,
+              "default": 12
+            },
+            "tempo_operacao_horas": {
+              "type": "number",
+              "description": "Horizonte futuro de operação (t, em horas) para o qual se deseja projetar a probabilidade de sobrevivência R(t) (ex.: 720 para 30 dias).",
+              "minimum": 1
+            }
+          },
+          "required": ["tag", "periodo_meses", "tempo_operacao_horas"],
+          "additionalProperties": false
+        }
+      }
+    }
+  ]
+}

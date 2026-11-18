@@ -1,1 +1,37 @@
+flowchart TD
+    %% Estilo dos blocos
+    classDef user fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000
+    classDef guardrail fill:#ffebee,stroke:#d32f2f,stroke-width:2px,color:#000
+    classDef process fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+    classDef llm fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef tool fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
 
+    B1["1. ENTRADA DO USUÁRIO<br/>Engenheiro de Manutenção / Técnico de Campo<br/>(Pergunta em texto livre ou consulta por TAG)"]:::user
+    
+    B2{"2. GUARDRAIL DE ENTRADA<br/>Está no escopo ITS (CFTV/PMV/Callbox)?<br/>Sem Prompt Injection ou risco NR-10/NR-35?"}:::guardrail
+    RECUSA["Recusa Padronizada<br/>Encaminha para Engenharia de Manutenção"]:::guardrail
+
+    B3["3. MONTAGEM DE CONTEXTO<br/>System Prompt (7 blocos) + Histórico (janela últimos N turnos)<br/>+ Busca Vetorial RAG (POPs, Matriz Criticidade, Fichas)"]:::process
+
+    B4["4. CHAMADA AO LLM<br/>Modelo Local (Ollama / Llama 3.1 8B)<br/>Parâmetros: temperature = 0.1 | max_tokens = 1024"]:::llm
+
+    B5{"5. DECISÃO DE TOOL<br/>Precisa consultar dados dinâmicos<br/>ou executar ação no FSM?"}:::llm
+
+    B6["6. EXECUÇÃO DAS TOOLS (JSON Schema)<br/>• consultar_ativo(tag)<br/>• consultar_historico_falhas(tag, janela)<br/>• consultar_procedimento(ativo, intervencao)<br/>• calcular_metricas_confiabilidade(tag, t)<br/>• abrir_ordem_servico(...)"]:::tool
+
+    B7{"7. GUARDRAIL DE SAÍDA<br/>Citou fonte? Separou FATO vs. HIPÓTESE?<br/>Não inventou TAG/métrica? Incluiu Nível de Confiança?"}:::guardrail
+    CORRECAO["Rejeita / Reprocessa Resposta<br/>Admite 'Não sei' se dado não existir"]:::guardrail
+
+    B8["8. RESPOSTA ESTRUTURADA + HISTÓRICO<br/>Entrega resposta formatada (máx. 4 parágrafos/8 itens)<br/>Salva turno na memória com reafirmação do TAG ativo"]:::user
+
+    %% Conexões
+    B1 --> B2
+    B2 -- "Não / Hostil / Perigoso" --> RECUSA
+    B2 -- "Sim (Válido)" --> B3
+    B3 --> B4
+    B4 --> B5
+    B5 -- "Sim (Aciona Tool)" --> B6
+    B6 -- "Retorno JSON / Erro NOT_FOUND" --> B3
+    B5 -- "Não (Contexto suficiente)" --> B7
+    B7 -- "Falhou na verificação" --> CORRECAO
+    B7 -- "Aprovado" --> B8

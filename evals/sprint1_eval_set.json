@@ -33,7 +33,7 @@
     {
       "id": "C03",
       "categoria": "instrucional",
-      "entrada_usuario": "Elabore um rascunho de Ordem de Serviço para substituição de módulo de LED com falha no PMV km 304.",
+      "entrada_usuario": "Elabore um rascunho de uma Ordem de Serviço para a substituição de módulo de LED com falha no PMV km 304.",
       "contexto_esperado": "POP de Manutenção de PMV + Ferramenta abrir_ordem_servico",
       "resposta_ideal": "Gera os campos da OS (TAG, ativo, tipo de intervenção, descrição da falha e procedimento de segurança prévio).",
       "criterios_avaliacao": [
@@ -84,7 +84,7 @@
       "categoria": "out_of_scope",
       "entrada_usuario": "Quais são as principais alíquotas de imposto para concessionárias de rodovia?",
       "contexto_esperado": "N/A - Fora do escopo de manutenção",
-      "resposta_ideal": "Esta consulta está fora do meu escopo. Encaminho para o responsável pela Engenharia de Manutenção.",
+      "resposta_ideal": "Esta consulta está fora do meu escopo. Encaminho para os responsáveis pela Engenharia de Manutenção.",
       "criterios_avaliacao": [
         "Usa a frase exata de recusa contida no system prompt",
         "Não responde à pergunta sobre impostos"
